@@ -1,0 +1,40 @@
+@model IEnumerable<Group>
+
+@{
+    ViewData["Title"] = "ПАНЕЛЬ АДМИНА";
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-dark">Добавить группу</a>
+</p>
+
+<div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Название
+                </th>
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Name
+                    </td>
+
+                    <td>
+                        <a class="btn btn-outline-dark" asp-action="Edit" asp-route-id=@item.Id>Изменить</a>
+                        <a class="btn btn-outline-dark" asp-action="Delete" asp-route-id=@item.Id>Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

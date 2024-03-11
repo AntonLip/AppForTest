@@ -1,0 +1,132 @@
+﻿@model testapp.Models.DtoModels.Question.GetQuestionDto
+
+@{
+    ViewData["Title"] = "Изменить вопрос";
+}
+ <a asp-action="Index"><?xml version="1.0" encoding="utf-8" ?>
+        <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+        <svg width="24" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path opacity="0.4" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#292D32" />
+            <path d="M13.0594 12.0001L15.3594 9.70011C15.6494 9.41011 15.6494 8.93011 15.3594 8.64011C15.0694 8.35011 14.5894 8.35011 14.2994 8.64011L11.9994 10.9401L9.69937 8.64011C9.40937 8.35011 8.92937 8.35011 8.63938 8.64011C8.34938 8.93011 8.34938 9.41011 8.63938 9.70011L10.9394 12.0001L8.63938 14.3001C8.34938 14.5901 8.34938 15.0701 8.63938 15.3601C8.78938 15.5101 8.97937 15.5801 9.16937 15.5801C9.35937 15.5801 9.54937 15.5101 9.69937 15.3601L11.9994 13.0601L14.2994 15.3601C14.4494 15.5101 14.6394 15.5801 14.8294 15.5801C15.0194 15.5801 15.2094 15.5101 15.3594 15.3601C15.6494 15.0701 15.6494 14.5901 15.3594 14.3001L13.0594 12.0001Z" fill="#292D32" />
+        </svg></a>
+<hr />
+<h4 class="text-center">Изменить вопрос по дисциплине @Model.Discipline.Name</h4>
+<h4 class="text-center">Тема @Model.Discipline.Themes[0].Name</h4>
+
+<form asp-action="Edit" method="post">
+    <div class="d-flex flex-row align-items-center mb-4" hidden>
+        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+        <div class="form-outline flex-fill mb-0" hidden>
+            <textarea asp-for="Discipline.Id" class="form-control"></textarea>
+            <span asp-validation-for="Discipline.Id" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="d-flex flex-row align-items-center mb-4" hidden>
+        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+        <div class="form-outline flex-fill mb-0" hidden>
+            <textarea asp-for="Discipline.Name" class="form-control"></textarea>
+            <span asp-validation-for="Discipline.Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="d-flex flex-row align-items-center mb-4" hidden>
+        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+        <div class="form-outline flex-fill mb-0" hidden>
+            <textarea asp-for="Discipline.Themes[0].Id" class="form-control"></textarea>
+            <span asp-validation-for="Discipline.Themes[0].Id" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="d-flex flex-row align-items-center mb-4" hidden>
+        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+        <div class="form-outline flex-fill mb-0" hidden>
+            <textarea asp-for="Discipline.Themes[0].Name" class="form-control"></textarea>
+            <span asp-validation-for="Discipline.Themes[0].Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="d-flex flex-row align-items-center mb-4">
+        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+        <div class="form-outline flex-fill mb-0">
+            <label asp-for="Title">Текст вопроса:</label>
+            <textarea asp-for="Title" class="form-control"></textarea>
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Ответы:</label>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Текст ответа</th>
+                    <th>Он правильный?</th>
+                    <th>Удалить</th>
+                </tr>
+            </thead>
+            <tbody id="answers-table">
+                @for (var i = 0; i < Model.Answers.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="hidden" asp-for="Answers[i].Id" />
+                            <input type="text" asp-for="Answers[i].Name" class="form-control" />
+                            <span asp-validation-for="Answers[i].Name" class="text-danger"></span>
+                        </td>
+                        <td class="align-items-center">
+                            <select asp-for="Answers[i].IsCorrect" class="form-control">
+                                <option value="true">Да</option>
+                                <option value="false">Нет</option>
+                            </select>
+                            <span asp-validation-for="Answers[i].IsCorrect" class="text-danger"></span>
+                        </td>
+                        <td class="align-items-center">
+                            <select asp-for="Answers[i].IsDelete" class="form-control">
+                                <option value="true">Да</option>
+                                <option value="false">Нет</option>
+                            </select>
+                            <span asp-validation-for="Answers[i].IsDelete" class="text-danger"></span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-primary" id="add-answer">Добавить вариант ответа</button>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-dark">Сохранить</button>
+</form>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Add Answer button click event
+            $("#add-answer").on("click", function () {
+                var index = $("#answers-table tr").length;
+                var newRow = '<tr>' +
+                    '<td>' +
+                    '<input type="hidden" name="Answers[' + index + '].Id" />' +
+                    '<input type="text" name="Answers[' + index + '].Name" class="form-control" />' +
+                    '<span class="text-danger" data-valmsg-for="Answers[' + index + '].Name"></span>' +
+                    '</td>' +
+                    '<td class="align-items-center">' +
+                    '<select name="Answers[' + index + '].IsCorrect" class="form-control">' +
+                    '<option value="true">Да</option>' +
+                    '<option value="false">Нет</option>' +
+                    '</select>' +
+                    '<span class="text-danger" data-valmsg-for="Answers[' + index + '].IsCorrect"></span>' +
+                    '</td>' +
+                    '<td class="align-items-center">' +
+                    '<button type="button" class="btn btn-outline-danger delete-answer">' +
+                    '<i class="fa fa-trash"></i>' +
+                    '</button>' +
+                    '</td>' +
+                    '</tr>';
+                $("#answers-table").append(newRow);
+            });
+
+            // Delete Answer button click event
+            $(document).on("click", ".delete-answer", function () {
+                $(this).closest("tr").remove();
+            });
+        });
+    </script>
+}

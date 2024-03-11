@@ -1,0 +1,40 @@
+﻿@model IEnumerable<GetQuestionDto>
+
+@{
+    ViewData["Title"] = "Вопросы";
+}
+
+<div>
+    <h1 class="text-center">Список вопросов</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Тема
+                </th>
+                <th>
+                    Текст вопроса
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Discipline.Themes[0].Name
+                    </td>
+                    <td>
+                        @item.Title
+                    </td>                    
+                    <td>
+                        <a class="btn btn-outline-dark" asp-action="Edit" asp-route-id=@item.Id>Изменить</a>
+                        <a class="btn btn-outline-dark" asp-action="Delete" asp-route-id=@item.Id>Удалить</a>
+                        <a class="btn btn-outline-dark" asp-action="Details" asp-route-id=@item.Id>Подробнее</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

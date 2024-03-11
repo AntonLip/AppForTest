@@ -1,0 +1,74 @@
+﻿@model IEnumerable<ApplicationUserDto>
+
+@{
+    ViewData["Title"] = "ПАНЕЛЬ АДМИНА";
+    int idx = 0;
+}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var selectElement = document.getElementById("mySelect");
+
+        selectElement.addEventListener("change", function() {
+            var selectedValue = selectElement.value;
+            window.location.href = '/Admin/FindByGroupId?id=' + selectedValue;
+        });
+    });
+</script>
+<p>
+   <a asp-action="Register" asp-controller="Account" class="btn btn-outline-dark">Добавить пользователя</a>
+    <select id="mySelect" class="btn btn-outline-dark custom-btn" >
+        <option value="-1" tabindex="-1">Выберите группу</option>
+        @foreach (var item in ViewBag.Groups)
+        {             
+            <option value=@item.Id tabindex=@idx>@item.Name</option>
+            idx++;
+        }
+    </select>
+    <a asp-action="Index" class="btn btn-outline-dark">Убрать фильтры</a>
+</p>
+<div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Имя
+                </th>
+                <th>
+                    Фамилия
+                </th>
+                <th>
+                    Эл. почта
+                </th>
+                <th>
+                    Роль
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.FirstName
+                    </td>
+                    <td>
+                        @item.LastName
+                    </td>
+                    <td>
+                        @item.Email
+                    </td>
+                    <td>
+                        @item.Role
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-dark" asp-action="Edit" asp-route-id=@item.Id>Изменить</a>
+                        <a class="btn btn-outline-dark" asp-action="Delete" asp-route-id=@item.Id>Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

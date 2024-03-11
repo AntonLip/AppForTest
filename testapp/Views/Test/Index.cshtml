@@ -1,0 +1,275 @@
+﻿@model IndexTestViewModel
+
+<hr />
+<div class="form-group row">
+    <label class="col-sm-2 col-form-label">Выберите тип объем теста</label>
+    <div class="col-sm-10">
+        <select id="TypeOfTest" class="form-control">
+            <option value="Дисциплина">Дисциплина</option>
+            <option value="Тема">Тема</option>
+            <option value="Темы">Темы</option>
+        </select>
+    </div>
+</div>
+
+<form id="disciplineForm" asp-action="GetTestByDisciplineId" method="get" class="mt-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group row">
+        <label asp-for="DisciplineId" class="col-sm-2 col-form-label">Выберите дисциплину</label>
+        <div class="col-sm-10">
+            <select asp-for="DisciplineId" id="disciplineTestDropdown">
+                <option>Выберите дисциплину</option>
+                @foreach (var item in Model.Disciplines)
+                {
+                    <option value=@item.Id>@item.Name</option>
+                }
+            </select>
+            <span asp-validation-for="DisciplineId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Начать" class="btn btn-outline-dark" />
+    </div>
+</form>
+
+<form id="themeForm" asp-action="GetTestByThemeId" class="mt-3" style="display: none;" method="get">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group row">
+        <label asp-for="DisciplineId" class="col-sm-2 col-form-label">Выберите дисциплину</label>
+        <div class="col-sm-10">
+            <select asp-for="DisciplineId" id="disciplineDropdown">
+                <option>Выберите дисциплину</option>
+
+                @foreach(var item in Model.Disciplines)
+                {
+                    <option value=@item.Id>@item.Name</option>
+                }
+            </select>
+            <span asp-validation-for="DisciplineId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="ThemeId" class="col-sm-2 col-form-label">Выберите тему</label>
+        <div class="col-sm-10">
+            <select asp-for="ThemeId" id="themeDropdown" class="form-control">
+                <option>Выберите тему</option>
+            </select>
+            <span asp-validation-for="ThemeId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Начать" class="btn btn-outline-dark" />
+    </div>
+</form>
+
+<form id="themeForm2" asp-action="GetTestByThemes" class="mt-3" method="post" style="display: none;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group row">
+        <label asp-for="DisciplineId" class="col-sm-2 col-form-label">Выберите дисциплину</label>
+        <div class="col-sm-10">
+            <select asp-for="DisciplineId" id="disciplineDropdown2">
+                <option >Выберите дисциплину</option>
+
+                @foreach (var item in Model.Disciplines)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+            <span asp-validation-for="DisciplineId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Темы по выбранной дисциплине</label>
+        <div class="col-sm-10">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Название темы</th>
+                        <th>Включить в тест?</th>
+                    </tr>
+                </thead>
+                <tbody id="themeTable">
+                    <!-- Themes will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Начать тест" class="btn btn-outline-dark" />
+    </div>
+</form>
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle change event of the first dropdown
+            $("#TypeOfTest").on("change", function () {
+                var selectedType = $(this).val();
+
+                // Show/hide the relevant form based on the selected type
+                if (selectedType === "Дисциплина") {
+                    $("#disciplineForm").show();
+                    $("#themeForm").hide();
+                    $("#themeForm2").hide();
+                } else if (selectedType === "Тема") {
+                    $("#disciplineForm").hide();
+                    $("#themeForm2").hide();
+                    $("#themeForm").show();
+                }
+                else if (selectedType === "Темы") {
+                    $("#disciplineForm").hide();
+                    $("#themeForm2").show();
+                    $("#themeForm").hide();
+                }
+            });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            // Handle change event of the discipline dropdown
+            $("#disciplineDropdown").on("change", function () {
+                var disciplineId = $(this).val();
+                var themeDropdown = $("#themeDropdown");
+                themeDropdown.empty();
+                console.log("i am in");
+                // Send an AJAX request to fetch the themes for the selected discipline
+                $.ajax({
+                    url: "/Discipline/GetThemesByDisciplineId/" + disciplineId,
+                    type: "GET",
+                    
+                    success: function (result) {
+                        // Populate the theme dropdown with the retrieved themes
+                        $.each(result, function (index, theme) {
+                            themeDropdown.append($('<option></option>').val(theme.id).text(theme.name));
+                        });
+                    },
+                    error: function () {
+                        console.log("Error occurred while fetching themes.");
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Handle change event of the discipline dropdown
+            $("#disciplineDropdown2").on("change", function () {
+                var disciplineId = $(this).val();
+                var themeTable = $("#themeTable");
+                themeTable.empty();
+
+                // Send an AJAX request to fetch the themes for the selected discipline
+                $.ajax({
+                    url: "/Discipline/GetThemesByDisciplineId/" + disciplineId,
+                    type: "GET",
+                    success: function (result) {
+                        // Populate the themeTable with the retrieved themes
+                        $.each(result, function (index, theme) {
+                            
+                            var row = $("<tr></tr>");
+                            row.append($("<td></td>").text(theme.name));
+
+                            row.append($("<td></td>").html(
+                                "<select name='Themes[" + index + "].IsDeleted'>" +
+                                    "<option value='true'>Да</option>" +
+                                    "<option value='false'>Нет</option>" +
+                                "</select>" +
+                                "<input type='hidden' name='Themes[" + index + "].Id' value='" + theme.id + "' />" +
+                                "<input type='hidden' name='Themes[" + index + "].Name' value='" + theme.name + "' />"
+                            ));
+
+                            themeTable.append(row);
+                        });
+                    },
+                    error: function () {
+                        console.log("Error occurred while fetching themes.");
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+            $(document).ready(function () {
+    
+                // Handle submit event of the discipline form
+                $("#disciplineForm").on("submit", function () {
+                    var disciplineId = $("#disciplineTestDropdown").val();
+                    var url = "/Test/GetTestByDisciplineId/" +  disciplineId;
+                    console.log("submit event of the discipline form");
+                    console.log(url);
+                    $.ajax({
+                        url: url,
+                        type: "GET",                        
+                        success: function (result) {
+                            console.log("success occurred while fetching discipline test.");                           
+                        },
+                        error: function () {
+                            console.log("Error occurred while fetching themes.");
+                        }
+                    });
+                });
+            });
+        </script>
+    <script>
+    $(document).ready(function () {
+      
+                    // Handle submit event of the discipline form
+                    $("#themeForm").on("submit", function () {
+                        var themeId = $("#themeDropdown").val();
+                        var url = "/Test/GetTestByThemeId/" +  themeId;
+                        console.log("submit event of the themeId form");
+                        console.log(url);
+                        $.ajax({
+                            url: url,
+                            type: "GET",                        
+                            success: function (result) {
+                                console.log("success occurred while fetching discipline test.");                           
+                            },
+                            error: function () {
+                                console.log("Error occurred while fetching themes.");
+                            }
+                        });
+                    });
+                });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#themeForm2").on("submit", function (e) {
+                e.preventDefault();
+    
+                var form = $(this);
+                var url = form.attr("action");
+                var method = form.attr("method");
+                var themes = [];
+                form.find("tbody#themeTable tr").each(function () {
+                    var themeId = $(this).find("input[name^='Themes'][name$='.Id']").val();
+                    var themeName = $(this).find("input[name^='Themes'][name$='.Name']").val();
+                    var isDeleted = $(this).find("select[name^='Themes'][name$='.IsDeleted']").val();
+                    var theme = {
+                        Id: themeId,
+                        Name: themeName,
+                        IsDelete: isDeleted
+                    };
+                    themes.push(theme);
+                });
+                console.log(themes);
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: JSON.stringify(themes),
+                    contentType: "application/json",
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}

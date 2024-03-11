@@ -1,0 +1,41 @@
+﻿@model List<GetQuestionDto>
+
+@{
+    ViewData["Title"] = "Test Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Model.Count > 0)
+{
+    <form asp-action="CheckTest" method="post">
+        <h1 class="text-center">@Model[0].Discipline.Name</h1>
+        
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <div class="quizQuestionContainer question1">
+                <h3>Вопрос @i из @Model.Count</h3>
+                <div class="quizQuestionContent">
+                    <strong>@Model[i].Title</strong>
+                    <input asp-for="@Model[i].Title" value="@Model[i].Title" hidden />
+                    <input asp-for="@Model[i].Id" value="@Model[i].Id" hidden />
+                    <input asp-for="@Model[i].Discipline.Name" value="@Model[i].Discipline.Name" hidden />
+                    <input asp-for="@Model[i].Discipline.Id" value="@Model[i].Discipline.Id" hidden />
+                    <ul>
+                        @for (int j = 0; j < Model[i].Answers.Count; j++)
+                        {
+                            <li>
+                                <input type="checkbox" asp-for="@Model[i].Answers[j].IsChoosen">
+                                <input type="text" hidden asp-for="@Model[i].ThemeName">
+                                <input type="text" hidden asp-for="@Model[i].Answers[j].Id" value="@Model[i].Answers[j].Id">
+                                <input type="text" hidden asp-for="@Model[i].Answers[j].Name" value="@Model[i].Answers[j].Name">
+                                <label>@Model[i].Answers[j].Name</label>
+                            </li>
+                        }
+                    </ul>
+                    <br>
+                </div>
+            </div>
+        } 
+        <button type="submit" class="btn btn-dark">Проверить</button>
+
+    </form>
+}

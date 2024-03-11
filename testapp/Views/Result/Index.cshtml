@@ -1,0 +1,60 @@
+﻿@model IEnumerable<testapp.Models.DtoModels.ResultDto>
+
+@{
+    ViewData["Title"] = "Index";
+    int idx = 0;
+}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var selectElement = document.getElementById("mySelect");
+
+        selectElement.addEventListener("change", function () {
+            var selectedValue = selectElement.value;
+            window.location.href = '/Result/FindByGroupId?id=' + selectedValue;
+        });
+    });
+</script>
+<select id="mySelect" class="btn btn-outline-dark custom-btn">
+    <option value="-1" tabindex="-1">Выберите группу</option>
+    @foreach (var item in ViewBag.Groups)
+    {
+        <option value=@item.Id tabindex=@idx>@item.Name</option>
+        idx++;
+    }
+</select>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                ФИО
+            </th>
+            <th>
+                Дата сдачи
+            </th>
+            <th>
+                Отметка
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.User.LastName @item.User.LastName
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateToTakePass)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grade)
+                </td>
+                <td>
+                    <a class="btn btn-outline-dark" asp-action="Details" asp-route-id=@item.Id>Подробнее</a>
+                    <a class="btn btn-outline-dark" asp-action="Delete" asp-route-id=@item.Id>Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

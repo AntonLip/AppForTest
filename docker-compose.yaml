@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+    database:
+        image: mcr.microsoft.com/mssql/server
+        restart: always
+        container_name: database
+        ports:
+           - "1433:1433"
+        environment:
+            ACCEPT_EULA: Y
+            MSSQL_SA_PASSWORD: pass!
+            MSSQL_PID: Express
+        volumes:
+            - ./data/db:/var/lib/mysql
+    webapp:
+        build:
+            context: .
+            dockerfile: ./testapp/Dockerfile
+        environment:
+            CONN_STR_SERVER: database
+            CONN_STR_PORT: 1433
+            CONN_STR_USER: SA
+            CONN_STR_USER_PASSWORD: pass!
+        restart: always
+        container_name: webapp
+        ports:
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - database
